@@ -14,8 +14,8 @@ namespace P4
             string p_c = args[1];
             string q_e = args[2];
             string q_c = args[3];
-            string C = args[4];
-            string P = args[5];
+            string cipher = args[4];
+            string plain = args[5];
 
             BigInteger p = BigInteger.Pow(2, Int32.Parse(p_e));
             p = p - BigInteger.Parse(p_c);
@@ -29,6 +29,20 @@ namespace P4
             Console.WriteLine(d);
             Console.WriteLine("Is ed % phi = 1: {0}", (e*d%phi)==1);
 #endif
+            // Decrypting
+            BigInteger C = BigInteger.Parse(cipher);
+#if debug
+            Console.WriteLine("Decrypting the cipher {0}", C);
+#endif
+            BigInteger decrypted = BigInteger.ModPow(C, d, modulus);
+
+            // Encrypting
+            BigInteger M = BigInteger.Parse(plain);      
+#if debug
+            Console.WriteLine("Encrypting the message {0}", M);
+#endif
+            BigInteger encrypted = BigInteger.ModPow(M, e, modulus);
+            Console.WriteLine("{0},{1}", decrypted, encrypted);
         }
         /**
          * Find the inverse mod of phi for e value.
@@ -42,7 +56,7 @@ namespace P4
         static BigInteger InverseMod(BigInteger dividend, BigInteger divisor, BigInteger q1, BigInteger q2,
          BigInteger p1, BigInteger p2, BigInteger modulus)
         {
-#if debug
+#if trace
             Console.WriteLine("q1,q2 = {0},{1}", q1, q2);
 #endif
             if (divisor == 0) {
@@ -57,6 +71,8 @@ namespace P4
             if (remainder == 1) {
                 Console.WriteLine("Found remainder of 1. Has inverse!");
             }
+#endif
+#if trace
             Console.WriteLine("{0} = {1}({2}) + {3}", dividend, q, divisor, remainder);
 #endif
             if (p2 == NEG_ONE) {// first iteration
@@ -84,7 +100,7 @@ namespace P4
             if (p < 0) {
                 p += modulus;
             }
-#if debug
+#if trace
             Console.WriteLine("p = {0}-({1}*{2}) % {3} = {4}", p2, p1, q2, modulus, p);
 #endif
             return p;
